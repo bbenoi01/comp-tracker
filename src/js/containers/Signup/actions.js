@@ -8,7 +8,6 @@ export const signupUser = (newUserData, history) => (dispatch) => {
         setAuthorizationHeader(res.data.token);
         dispatch(getUserData());
         dispatch({ type: types.CLEAR_ERRORS });
-        console.log('history', history);
         history.push('/home');
     })
     .catch(err => {

@@ -8,39 +8,36 @@ import ClearAllIcon from '@material-ui/icons/ClearAll';
 import KeyboardReturnIcon from '@material-ui/icons/KeyboardReturn';
 
 import {
-    logoutUser
+    logoutUser,
+    updateMetrics
 } from './actions';
 
 export default class Navbar extends Component {
-    // constructor(props) {
-    //     super(props);
-
-
-    // }
-
     handleLogout = () => {
         const { dispatch } = this.props;
         dispatch(logoutUser())
     }
 
     handleClear = () => {
-        this.setState({
-            hum: '',
-            humx: '',
-            other: '',
-            tablets: '',
-            jetpacks: '',
-            virtual: '',
-            desktop: '',
-            whp: '',
-            features: '',
-            multi: '',
-            single: '',
-            techCoach: '',
-            ew: '',
-            additionalLine: '',
-            accessories: ''
-        })
+        const { dispatch } = this.props;
+        const userMetrics = {
+            hum: 0,
+            humx: 0,
+            other: 0,
+            tablets: 0,
+            jetpacks: 0,
+            virtual: 0,
+            desktop: 0,
+            whp: 0,
+            features: 0,
+            multi: 0,
+            single: 0,
+            techCoach: 0,
+            ew: 0,
+            addLine: 0,
+            accessories: 0
+        }
+        dispatch(updateMetrics(userMetrics))
     }
 
     render() {

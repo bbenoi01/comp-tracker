@@ -3,8 +3,23 @@ import Home from './home';
 
 function mapStoreToProps(store) {
     return {
-        quota: store.app.quota[0],
-        metrics: store.app.metrics
+        quota: store.home.quota,
+        metrics: store.home.metrics,
+        hum: store.home.hum,
+        humx: store.home.humx,
+        other: store.home.other,
+        tablets: store.home.tablets,
+        jetpacks: store.home.jetpacks,
+        virtual: store.home.virtual,
+        desktop: store.home.desktop,
+        whp: store.home.whp,
+        features: store.home.features,
+        multi: store.home.multi,
+        single: store.home.single,
+        techCoach: store.home.techCoach,
+        ew: store.home.ew,
+        addLine: store.home.addLine,
+        accessories: store.home.accessories
     }
 }
 
