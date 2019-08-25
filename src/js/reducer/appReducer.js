@@ -4,7 +4,6 @@ const INITIAL_STATE = {
     authenticated: false,
     loading: false,
     credentials: {},
-    quota: [],
     errors: {}
 };
 
@@ -58,7 +57,8 @@ export default function AppReducer(state = INITIAL_STATE, action) {
             return {
                 authenticated: true,
                 loading: false,
-                ...payload
+                credentials: payload.credentials,
+                errors: {}
             };
         }
 

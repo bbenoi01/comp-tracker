@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -6,91 +7,65 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import TextField from "@material-ui/core/TextField";
+import Button from '@material-ui/core/Button';
+
+import {
+    updateMetrics,
+    getUserMetrics,
+    updateMetricsState,
+    updateAccState
+} from './actions';
 
 export default class Home extends Component {
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            hum: 0,
-            humx: 0,
-            other: 0,
-            tablets: 0,
-            jetpacks: 0,
-            virtual: 0,
-            desktop: 0,
-            whp: 0,
-            features: 0,
-            multi: 0,
-            single: 0,
-            techCoach: 0,
-            ew: 0,
-            additionalLine: 0,
-            accessories: 0
-        }
-    }
-
-    mapMetricsToState = (metrics) => {
-        this.setState({
-            hum: metrics && metrics[0].hum ? parseInt(metrics[0].hum) : 0,
-            humx: metrics && metrics[0].humx ? parseInt(metrics[0].humx) : 0,
-            other: metrics && metrics[0].other ? parseInt(metrics[0].other) : 0,
-            tablets: metrics && metrics[0].tablets ? parseInt(metrics[0].tablets) : 0,
-            jetpacks: metrics && metrics[0].jetpacks ? parseInt(metrics[0].jetpacks) : 0,
-            virtual: metrics && metrics[0].virtual ? parseInt(metrics[0].virtual) : 0,
-            desktop: metrics && metrics[0].desktop ? parseInt(metrics[0].desktop) : 0,
-            whp: metrics && metrics[0].whp ? parseInt(metrics[0].whp) : 0,
-            features: metrics && metrics[0].features ? parseInt(metrics[0].features) : 0,
-            multi: metrics && metrics[0].multi ? parseInt(metrics[0].multi) : 0,
-            single: metrics && metrics[0].single ? parseInt(metrics[0].single) : 0,
-            techCoach: metrics && metrics[0].techCoach ? parseInt(metrics[0].techCoach) : 0,
-            ew: metrics && metrics[0].ew ? parseInt(metrics[0].ew) : 0,
-            additionalLine: metrics && metrics[0].additionalLine ? parseInt(metrics[0].additionalLine) : 0,
-            accessories: metrics && metrics[0].accessories ? parseFloat(metrics[0].accessories).toFixed(2) : 0
-        })
-    }
-
-    componentDidMount() {
-        const { metrics } = this.props;
-        this.mapMetricsToState(metrics);
+    componentWillMount() {
+        const { dispatch } = this.props;
+        dispatch(getUserMetrics());
     }
 
     handleChange = (e) => {
-        this.setState({
-            [e.target.name]: parseInt(e.target.value)
-        })
+        const { dispatch } = this.props;
+        const metric = {[e.target.name]: parseInt(e.target.value) || 0};
+        dispatch(updateMetricsState(metric))
     }
 
-    // handleSubmit = () => {
-    //     const userMetrics = {
-    //         hum: this.state.hum,
-    //         humx: this.state.humx,
-    //         other: this.state.other,
-    //         tablets: this.state.tablets,
-    //         jetpacks: this.state.jetpacks,
-    //         virtual: this.state.virtual,
-    //         desktop: this.state.desktop,
-    //         whp: this.state.whp,
-    //         features: this.state.features,
-    //         multi: this.state.multi,
-    //         single: this.state.single,
-    //         techCoach: this.state.techCoach,
-    //         ew: this.state.ew,
-    //         additionalLine: this.state.additionalLine,
-    //         accessories: this.state.accessories
-    //     }
-    // }
+    handleAccChange = (e) => {
+        const { dispatch } = this.props;
+        const metric = {[e.target.name]: e.target.value};
+        dispatch(updateAccState(metric))
+    }
+
+    handleSubmit = () => {
+        const { dispatch, hum, humx, other, tablets, jetpacks, virtual, desktop, whp, features, multi, single, techCoach, ew, addLine, accessories } = this.props;
+        const userMetrics = {
+            hum,
+            humx,
+            other,
+            tablets,
+            jetpacks,
+            virtual,
+            desktop,
+            whp,
+            features,
+            multi,
+            single,
+            techCoach,
+            ew,
+            addLine,
+            accessories
+        };
+        dispatch(updateMetrics(userMetrics));
+    }
 
     render() {
-        const { quota, metrics } = this.props;
-        console.log('metrics', metrics);
+        const { quota, metrics, hum, humx, other, tablets, jetpacks, virtual, desktop, whp, features, multi, single, techCoach, ew, addLine, accessories } = this.props;
 
         let newLines;
         let upgrades;
 
         if(!!quota) {
-            newLines = parseInt(quota.new);
-            upgrades = parseInt(quota.upgrades);
+            newLines = quota.new;
+            upgrades = quota.upgrades;
         } else {
             newLines = 0;
             upgrades = 0
@@ -100,91 +75,9 @@ export default class Home extends Component {
 
         let bucket;
 
-        if(isNaN(this.state.hum)) {
-            bucket = this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
+        if(!!metrics) {
+            bucket = (hum*50 + humx*200 + other*50 + tablets*200 + jetpacks*200 + virtual*75 + desktop*50 + whp*200 + multi*200 + single*70 + techCoach*35 + ew*4 + addLine*9 + accessories*.35).toFixed(2);
         } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.humx)) {
-            bucket = this.state.hum*50 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.other)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.tablets)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.jetpacks)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.virtual)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.desktop)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.whp)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(!this.state.multi || isNaN(this.state.multi)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + 0 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.single)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.techCoach)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.ew)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.additionalLine*9 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.additionalLine)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.accessories*.35;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(this.state.accessories)) {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9;
-        } else {
-            bucket = this.state.hum*50 + this.state.humx*200 + this.state.other*50 + this.state.tablets*200 + this.state.jetpacks*200 + this.state.virtual*75 + this.state.desktop*50 + this.state.whp*200 + this.state.multi*200 + this.state.single*70 + this.state.techCoach*35 + this.state.ew*4 + this.state.additionalLine*9 + this.state.accessories*.35;
-        }
-
-        if(isNaN(bucket)) {
             bucket = ''
         }
 
@@ -220,7 +113,7 @@ export default class Home extends Component {
                             <TableCell style={{color: 'whitesmoke'}}><b>Metrics</b></TableCell>
                             <TableCell style={{textAlign: 'center', color: 'whitesmoke'}}><b>{newLines}</b></TableCell>
                             <TableCell style={{textAlign: 'center', color: 'whitesmoke'}}><b>{upgrades}</b></TableCell>
-                            <TableCell style={{textAlign: 'center', color: 'whitesmoke'}}><b>{total}</b></TableCell>
+                            <TableCell style={{textAlign: 'center', color: 'whitesmoke'}}><b>{total.toString()}</b></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -234,50 +127,50 @@ export default class Home extends Component {
                                 Hum
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="hum" name="hum" type="number" value={this.state.hum} onChange={this.handleChange}/>
+                                <TextField id="hum" name="hum" type="text" value={hum === 0 ? ('') : (hum)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 50</TableCell>
-                            <TableCell align="right">{this.state.hum * 50 || ''}</TableCell>
+                            <TableCell align="right">{hum*50 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Hum X
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="humx" name="humx" type="number" value={this.state.humx} onChange={this.handleChange}/>
+                                <TextField id="humx" name="humx" type="text" value={humx === 0 ? ('') : (humx)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 200</TableCell>
-                            <TableCell align="right">{this.state.humx * 200 || ''}</TableCell>
+                            <TableCell align="right">{humx * 200 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Other
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="other" name="other" type="number" value={this.state.other} onChange={this.handleChange}/>
+                                <TextField id="other" name="other" type="text" value={other === 0 ? ('') : (other)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 50</TableCell>
-                            <TableCell align="right">{this.state.other * 50 || ''}</TableCell>
+                            <TableCell align="right">{other * 50 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 <b>Tablets</b>
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="tablets" name="tablets" type="number" value={this.state.tablets} onChange={this.handleChange}/>
+                                <TextField id="tablets" name="tablets" type="text" value={tablets === 0 ? ('') : (tablets)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 200</TableCell>
-                            <TableCell align="right">{this.state.tablets * 200 || ''}</TableCell>
+                            <TableCell align="right">{tablets * 200 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 <b>Jetpacks</b>
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="jetpacks" name="jetpacks" type="number" value={this.state.jetpacks} onChange={this.handleChange}/>
+                                <TextField id="jetpacks" name="jetpacks" type="text" value={jetpacks === 0 ? ('') : (jetpacks)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 200</TableCell>
-                            <TableCell align="right">{this.state.jetpacks * 200 || ''}</TableCell>
+                            <TableCell align="right">{jetpacks * 200 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
@@ -289,37 +182,37 @@ export default class Home extends Component {
                                 Virtual
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="virtual" name="virtual" type="number" value={this.state.virtual} onChange={this.handleChange}/>
+                                <TextField id="virtual" name="virtual" type="text" value={virtual === 0 ? ('') : (virtual)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 75</TableCell>
-                            <TableCell align="right">{this.state.virtual * 75 || ''}</TableCell>
+                            <TableCell align="right">{virtual * 75 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Desktop
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="desktop" name="desktop" type="number" value={this.state.desktop} onChange={this.handleChange}/>
+                                <TextField id="desktop" name="desktop" type="text" value={desktop === 0 ? ('') : (desktop)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 50</TableCell>
-                            <TableCell align="right">{this.state.desktop * 50 || ''}</TableCell>
+                            <TableCell align="right">{desktop * 50 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 <b>WHP</b>
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="whp" name="whp" type="number" value={this.state.whp} onChange={this.handleChange}/>
+                                <TextField id="whp" name="whp" type="text" value={whp === 0 ? ('') : (whp)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 200</TableCell>
-                            <TableCell align="right">{this.state.whp * 200 || ''}</TableCell>
+                            <TableCell align="right">{whp * 200 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 <b>Features</b>
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="features" name="features" type="number" value={this.state.features} onChange={this.handleChange}/>
+                                <TextField id="features" name="features" type="text" value={features === 0 ? ('') : (features)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right"></TableCell>
                             <TableCell align="right"></TableCell>
@@ -334,60 +227,60 @@ export default class Home extends Component {
                                 Multi
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="multi" name="multi" type="number" value={this.state.multi} onChange={this.handleChange}/>
+                                <TextField id="multi" name="multi" type="text" value={multi === 0 ? ('') : (multi)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 200</TableCell>
-                            <TableCell align="right">{this.state.multi * 200 || ''}</TableCell>
+                            <TableCell align="right">{multi * 200 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Single
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="single" name="single" type="number" value={this.state.single} onChange={this.handleChange}/>
+                                <TextField id="single" name="single" type="text" value={single === 0 ? ('') : (single)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 70</TableCell>
-                            <TableCell align="right">{this.state.single * 70 || ''}</TableCell>
+                            <TableCell align="right">{single * 70 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Tech Coach
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="techCoach" name="techCoach" type="number" value={this.state.techCoach} onChange={this.handleChange}/>
+                                <TextField id="techCoach" name="techCoach" type="text" value={techCoach === 0 ? ('') : (techCoach)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 35</TableCell>
-                            <TableCell align="right">{this.state.techCoach * 35 || ''}</TableCell>
+                            <TableCell align="right">{techCoach * 35 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 EW
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="ew" name="ew" type="number" value={this.state.ew} onChange={this.handleChange}/>
+                                <TextField id="ew" name="ew" type="text" value={ew === 0 ? ('') : (ew)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 4</TableCell>
-                            <TableCell align="right">{this.state.ew * 4 || ''}</TableCell>
+                            <TableCell align="right">{ew * 4 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 Additional Line
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="additionalLine" name="additionalLine" type="number" value={this.state.additionalLine} onChange={this.handleChange}/>
+                                <TextField id="addLine" name="addLine" type="text" value={addLine === 0 ? ('') : (addLine)} onChange={this.handleChange}/>
                             </TableCell>
                             <TableCell align="right">x 9</TableCell>
-                            <TableCell align="right">{this.state.additionalLine * 9 || ''}</TableCell>
+                            <TableCell align="right">{addLine * 9 || ''}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
                                 <b>Accessories</b>
                             </TableCell>
                             <TableCell align="right">
-                                <TextField id="accessories" name="accessories" type="number" value={this.state.accessories} onChange={this.handleChange} fullWidth/>
+                                <TextField id="accessories" name="accessories" type="text" value={accessories === 0 ? ('') : (accessories)} onChange={this.handleAccChange} fullWidth/>
                             </TableCell>
                             <TableCell align="right">x 35%</TableCell>
-                            <TableCell align="right">{this.state.accessories * .35 || ''}</TableCell>
+                            <TableCell align="right">{accessories === 0 || accessories === '' ? ('') : ((accessories * .35).toFixed(2))}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
@@ -399,6 +292,15 @@ export default class Home extends Component {
                         </TableRow>
                     </TableBody>
                 </Table>
+                <Grid container>
+                    <Grid item xs={12} style={{textAlign: 'center'}}>
+                        <div style={{margin: 'auto'}}>
+                            <Button variant='text' onClick={this.handleSubmit}>
+                                Submit
+                            </Button>
+                        </div>
+                    </Grid>
+                </Grid>
             </Paper>
         );
     }
