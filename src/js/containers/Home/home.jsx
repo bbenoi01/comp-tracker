@@ -64,7 +64,7 @@ export default class Home extends Component {
         let upgrades;
 
         if(!!quota) {
-            newLines = quota.new;
+            newLines = quota.newLines;
             upgrades = quota.upgrades;
         } else {
             newLines = 0;
