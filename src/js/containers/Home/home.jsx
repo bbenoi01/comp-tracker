@@ -209,13 +209,8 @@ export default class Home extends Component {
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
-                                <b>Features</b>
+                                <b style={{color: 'red'}}>Features</b>
                             </TableCell>
-                            <TableCell align="right">
-                                <TextField id="features" name="features" type="text" value={features === 0 ? ('') : (features)} onChange={this.handleChange}/>
-                            </TableCell>
-                            <TableCell align="right"></TableCell>
-                            <TableCell align="right"></TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell component="th" scope="row">
