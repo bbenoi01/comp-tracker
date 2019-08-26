@@ -33,6 +33,7 @@ export default class Signup extends Component {
         const { dispatch, history } = this.props;
         e.preventDefault();
         const newUserData = {
+            userType: 'rep',
             firstName: this.state.firstName,
             lastName: this.state.lastName,
             email: this.state.email,
