@@ -13,7 +13,6 @@ function mapStoreToProps(store) {
         virtual: store.home.virtual,
         desktop: store.home.desktop,
         whp: store.home.whp,
-        features: store.home.features,
         multi: store.home.multi,
         single: store.home.single,
         techCoach: store.home.techCoach,
