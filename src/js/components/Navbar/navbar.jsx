@@ -29,7 +29,6 @@ export default class Navbar extends Component {
             virtual: 0,
             desktop: 0,
             whp: 0,
-            features: 0,
             multi: 0,
             single: 0,
             techCoach: 0,

@@ -36,7 +36,7 @@ export default class Home extends Component {
     }
 
     handleSubmit = () => {
-        const { dispatch, hum, humx, other, tablets, jetpacks, virtual, desktop, whp, features, multi, single, techCoach, ew, addLine, accessories } = this.props;
+        const { dispatch, hum, humx, other, tablets, jetpacks, virtual, desktop, whp, multi, single, techCoach, ew, addLine, accessories } = this.props;
         const userMetrics = {
             hum,
             humx,
@@ -46,7 +46,6 @@ export default class Home extends Component {
             virtual,
             desktop,
             whp,
-            features,
             multi,
             single,
             techCoach,
@@ -58,7 +57,7 @@ export default class Home extends Component {
     }
 
     render() {
-        const { quota, metrics, hum, humx, other, tablets, jetpacks, virtual, desktop, whp, features, multi, single, techCoach, ew, addLine, accessories } = this.props;
+        const { quota, metrics, hum, humx, other, tablets, jetpacks, virtual, desktop, whp, multi, single, techCoach, ew, addLine, accessories } = this.props;
 
         let newLines;
         let upgrades;
